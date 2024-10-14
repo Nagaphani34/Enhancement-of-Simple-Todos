@@ -27,16 +27,32 @@ class SimpleTodos extends Component {
   }
 
   handleAddTodo = () => {
-    const {newTodoTitle, newTodoCount} = this.state
-    const newTodos = Array.from({length: newTodoCount}, (_, i) => ({
+    const {newTodoTitle} = this.state
+
+    // Check if the input ends with a number
+    const numberMatch = newTodoTitle.match(/(\d+)$/)
+    const todoCount = numberMatch ? parseInt(numberMatch[1], 10) : 1
+
+    // Remove the number from the title if present
+    const titleWithoutNumber = numberMatch
+      ? newTodoTitle.replace(/\d+$/, '').trim()
+      : newTodoTitle
+
+    if (!titleWithoutNumber) {
+      // Prevent adding empty titles
+      return
+    }
+
+    const newTodos = Array.from({length: todoCount}, (_, i) => ({
       id: Date.now() + i,
-      title: newTodoTitle,
+      title: titleWithoutNumber,
       completed: false,
     }))
+
+    // Update the state to add the new to-dos and clear the input
     this.setState(prevState => ({
       todosList: [...prevState.todosList, ...newTodos],
       newTodoTitle: '',
-      newTodoCount: 1,
     }))
   }
 
